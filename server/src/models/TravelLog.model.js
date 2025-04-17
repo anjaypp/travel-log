@@ -1,59 +1,61 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const travelLogSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
+      ref: 'User',
+      required: true,
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
     description: {
       type: String,
       required: true,
-      maxlength: 1000
+      maxlength: 1000,
     },
     visitedDate: {
       type: Date,
-      required: true
+      required: true,
     },
     location: {
       lat: {
         type: Number,
         required: true,
         min: -90,
-        max: 90
+        max: 90,
       },
       lng: {
         type: Number,
         required: true,
         min: -180,
-        max: 180
-      }
+        max: 180,
+      },
     },
     images: [
-        {
-          url: {
-            type: String,
-          },
-          publicId: {  
-            type: String,
-          },
+      {
+        url: {
+          type: String,
         },
-      ],
+        publicId: {
+          type: String,
+        },
+      },
+    ],
     rating: {
       type: Number,
       min: 1,
       max: 5,
-      default: 0
-    }
+      default: 0,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-module.exports = mongoose.model("TravelLog", travelLogSchema);
+const TravelLog = mongoose.model('TravelLog', travelLogSchema);
+
+export default TravelLog;
