@@ -11,6 +11,7 @@ import { connectDB } from './lib/config/db.js';
 import passport from './lib/config/passport/index.js';
 
 import authRoutes from './routes/auth.route.js';
+import logsRoutes from './routes/logs.route.js';
 
 // Initialization
 const app = express();
@@ -35,6 +36,8 @@ app.use(passport.initialize());
 
 //Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/logs', logsRoutes);
+
 
 app.use(notFound);
 app.use(errorHandler);
