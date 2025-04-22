@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axios";
 import Map, { Marker, Popup } from "react-map-gl/mapbox";
 import { IoMdPin } from "react-icons/io";
 import "mapbox-gl/dist/mapbox-gl.css";
+
 
 function MapPage() {
   const [pins, setPins] = useState([]);
@@ -10,10 +11,10 @@ function MapPage() {
   useEffect(() => {
     const getPins = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/v1/logs");
+        const res = await axiosInstance.get("/logs");
         setPins(res.data);
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching pins", err);
       }
     };
     getPins();
