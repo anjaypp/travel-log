@@ -8,3 +8,10 @@
     max-width: 500px;
     padding: 30px;
   }
+  .closeButton{
+    position: absolute;
+    top: 16%;
+    left: 80%;
+    height: 23px;
+    width: 23px;
+  }

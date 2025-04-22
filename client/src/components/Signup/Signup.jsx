@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { IoMdClose } from "react-icons/io";
 import styles from "./Signup.module.css";
 
 const Signup = () => {
@@ -7,11 +9,18 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
   
   return (
     <div className={styles.SignupContainer}>
       <form className="p-4 rounded shadow bg-light">
         <h3 className="text-center mb-4">Signup</h3>
+
+        <IoMdClose 
+          onClick={() => navigate("/")}
+          className={styles.closeButton}
+        />
 
         <div className="mb-3">
             <input

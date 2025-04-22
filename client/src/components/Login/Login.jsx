@@ -1,24 +1,33 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { IoMdClose } from "react-icons/io";
 import styles from "./Login.module.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  
+
+  const navigate = useNavigate();
+
   return (
     <div className={styles.loginContainer}>
       <form className="p-4 rounded shadow bg-light">
         <h3 className="text-center mb-4">Login</h3>
 
+        <IoMdClose
+          onClick={() => navigate("/")}
+          className={styles.closeButton}
+        />
+
         <div className="mb-3">
           <input
-          type="email" 
-          className="form-control" 
-          placeholder="Email" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            className="form-control"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
