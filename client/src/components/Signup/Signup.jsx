@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoMdClose } from "react-icons/io";
 import styles from "./Signup.module.css";
+import axiosInstance from "../../api/axios";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -11,34 +12,52 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axiosInstance.post("/auth/signup", {
+        name,
+        email,
+        password
+      });
+
+      if (res.status === 200) {
+        console.info("User signed up successfully");
+      }
+    } catch (err) {
+      console.error("Error signing up", err);
+    }
+  };
+
   return (
     <div className={styles.SignupContainer}>
-      <form className="p-4 rounded shadow bg-light">
+      <form className="p-4 rounded shadow bg-light" onSubmit={handleSignup}>
         <h3 className="text-center mb-4">Signup</h3>
 
-        <IoMdClose 
+        <IoMdClose
           onClick={() => navigate("/")}
           className={styles.closeButton}
         />
 
         <div className="mb-3">
-            <input
+          <input
             type="text"
             className="form-control"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            />
+          />
         </div>
 
         <div className="mb-3">
           <input
-          type="email" 
-          className="form-control" 
-          placeholder="Email" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            className="form-control"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 

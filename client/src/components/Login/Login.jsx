@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import axiosInstance from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { IoMdClose } from "react-icons/io";
 import styles from "./Login.module.css";
@@ -10,10 +11,25 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+ 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axiosInstance.post("/auth/login", { email, password });
+
+      if (res.status === 200) {
+        localStorage.setItem("accessToken", res.data.accessToken);
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Error logging in", err);
+    }
+  };
 
   return (
     <div className={styles.loginContainer}>
-      <form className="p-4 rounded shadow bg-light">
+      <form className="p-4 rounded shadow bg-light" onSubmit={handleLogin}>
         <h3 className="text-center mb-4">Login</h3>
 
         <IoMdClose
