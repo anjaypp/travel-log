@@ -1,5 +1,8 @@
 import React from "react";
-import NavigationBar from "./components/NavigationBar";
+import { Routes, Route } from "react-router-dom";
+import Login from "./components/Login/Login";
+import Signup from "./components/Signup/Signup";
+import NavigationBar from "./components/Navbar/NavigationBar";
 import MapPage from "./pages/MapPage";
 
 function App() {
@@ -7,6 +10,11 @@ function App() {
     <>
       <NavigationBar />
       <MapPage />
+      
+      <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      </Routes>
     </>
   );
 }

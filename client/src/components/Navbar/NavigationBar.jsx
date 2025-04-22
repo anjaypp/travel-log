@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { FaMapMarkedAlt } from "react-icons/fa";
 
@@ -20,10 +21,14 @@ const NavigationBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
-            <Button variant="outline-dark" className="me-2">
-              Login
-            </Button>
-            <Button variant="dark">Sign Up</Button>
+            <Link to="/login" className="nav-link">
+              <Button variant="outline-dark" className="me-2">
+                Login
+              </Button>
+            </Link>
+            <Link to="/signup" className="nav-link">
+              <Button variant="dark">Sign Up</Button>
+            </Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
