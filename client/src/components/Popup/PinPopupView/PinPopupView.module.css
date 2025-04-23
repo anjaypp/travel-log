@@ -1,0 +1,16 @@
+.pinPopupContainer{
+    display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 1.5rem;
+}
+.pinPopup{
+    padding: 2rem 1.5rem;
+}
+.popupTitle{
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #222;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}

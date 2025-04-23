@@ -4,6 +4,7 @@ import Map, { Marker, Popup } from "react-map-gl/mapbox";
 import { IoMdPin } from "react-icons/io";
 import "mapbox-gl/dist/mapbox-gl.css";
 
+import PinPopupView from "../components/Popup/PinPopupView/PinPopupView";
 
 function MapPage() {
   const [pins, setPins] = useState([]);
@@ -54,10 +55,7 @@ function MapPage() {
         anchor="left"
         style={{ color: "rgb(0, 0, 0)" }}
       >
-        <div>
-          <h1>{pin.title}</h1>
-          <p>{pin.description}</p>
-        </div>
+        <PinPopupView pin={pin} />
       </Popup>
         </React.Fragment>
       ))}
