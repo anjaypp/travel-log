@@ -1,9 +1,20 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { FaMapMarkedAlt } from "react-icons/fa";
 
 const NavigationBar = () => {
+  const navigate = useNavigate();
+
+  // Auth check
+  const isAuthenticated = !!localStorage.getItem("accessToken");
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    navigate("/login");
+  };
+
   return (
     <Navbar bg="light" expand="lg">
       <Container>
@@ -21,7 +32,13 @@ const NavigationBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
-            <Link to="/login" className="nav-link">
+            {isAuthenticated ? (
+              <Button variant="dark" onClick={handleLogout}>
+                Logout
+              </Button>
+            ) : (
+              <>
+              <Link to="/login" className="nav-link">
               <Button variant="outline-dark" className="me-2">
                 Login
               </Button>
@@ -29,6 +46,8 @@ const NavigationBar = () => {
             <Link to="/signup" className="nav-link">
               <Button variant="dark">Sign Up</Button>
             </Link>
+            </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
