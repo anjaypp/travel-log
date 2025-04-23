@@ -7,7 +7,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 function MapPage() {
   const [pins, setPins] = useState([]);
+  const [addNewPins, setNewPins] = useState(null);
 
+  // Fetch pins
   useEffect(() => {
     const getPins = async () => {
       try {
@@ -20,6 +22,12 @@ function MapPage() {
     getPins();
   }, []);
 
+  //Handle map click
+  const handleMapClick = (e) => {
+    const { lng, lat } = e.lngLat;
+    setNewPins({ lat, lng });
+  };
+
   return (
     <Map
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
@@ -30,6 +38,7 @@ function MapPage() {
       }}
       style={{ width: "100vw", height: "100vh" }}
       mapStyle="mapbox://styles/mapbox/streets-v9"
+      onDblClick={handleMapClick}
     >
       {pins.map((pin) => (
         <React.Fragment key={pin._id}>
@@ -52,6 +61,17 @@ function MapPage() {
       </Popup>
         </React.Fragment>
       ))}
+
+      {/* New pin on map click */}
+      {addNewPins && (
+        <Marker
+          longitude={addNewPins.lng}
+          latitude={addNewPins.lat}
+          anchor="bottom"
+        >
+          <IoMdPin size={30} color="rgb(43, 132, 227)" />
+        </Marker>
+      )}
     </Map>
   );
 }
