@@ -1,0 +1,14 @@
+.existing-pins{
+  height: 30px;
+  width: 30px;
+  color: rgb(227, 43, 43);
+}
+.custom-popup .mapboxgl-popup-close-button{
+    background-color: black;
+    border-radius: 4px;
+}
+.new-pins{
+    height: 30px;
+    width: 30px;
+    color:rgb(43, 132, 227);
+}

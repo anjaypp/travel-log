@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../api/axios";
+import axiosInstance from "../../api/axios";
 import Map, { Marker, Popup } from "react-map-gl/mapbox";
 import { IoMdPin } from "react-icons/io";
 import "mapbox-gl/dist/mapbox-gl.css";
-
-import PinPopupView from "../components/Popup/PinPopupView/PinPopupView";
+import "./MapPage.css"
+import PinPopupView from "../../components/Popup/PinPopupView/PinPopupView";
 
 function MapPage() {
   const [pins, setPins] = useState([]);
   const [addNewPins, setNewPins] = useState(null);
+  const [currentPopupId, setCurrentPopupId] = useState(null);
+
+  const handleMarkerClick = (id) => setCurrentPopupId(id);
 
   // Fetch pins
   useEffect(() => {
@@ -43,20 +46,30 @@ function MapPage() {
     >
       {pins.map((pin) => (
         <React.Fragment key={pin._id}>
-      <Marker longitude={pin.location.lng} latitude={pin.location.lat} anchor="bottom">
-        <IoMdPin size={30} color="rgb(227, 43, 43)" />
-      </Marker>
+          <Marker
+            onClick={() => handleMarkerClick(pin._id)}
+            longitude={pin.location.lng}
+            latitude={pin.location.lat}
+            anchor="bottom"
+          >
+            <IoMdPin className="existing-pins" />
+          </Marker>
 
-      <Popup
-        longitude={pin.location.lng}
-        latitude={pin.location.lat}
-        closeButton={true}
-        closeOnClick={false}
-        anchor="left"
-        style={{ color: "rgb(0, 0, 0)" }}
-      >
-        <PinPopupView pin={pin} />
-      </Popup>
+          {currentPopupId === pin._id && (
+
+          <Popup
+            className="custom-popup"
+            longitude={pin.location.lng}
+            latitude={pin.location.lat}
+            closeButton={true}
+            closeOnClick={false}
+            anchor="left"
+            onClose={() => setCurrentPopupId(null)}
+
+          >
+            <PinPopupView pin={pin} />
+          </Popup>
+             )}
         </React.Fragment>
       ))}
 
@@ -67,7 +80,7 @@ function MapPage() {
           latitude={addNewPins.lat}
           anchor="bottom"
         >
-          <IoMdPin size={30} color="rgb(43, 132, 227)" />
+          <IoMdPin className="new-pins" />
         </Marker>
       )}
     </Map>
