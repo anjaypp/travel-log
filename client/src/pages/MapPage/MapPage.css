@@ -1,14 +1,33 @@
+.custom-popup{
+  padding: 1rem;
+}
+.custom-popup .mapboxgl-popup-close-button{
+  background-color: black;
+  border-radius: 4px;
+}
+
+.custom-popup .mapboxgl-popup-tip {
+display: none;
+}
+
 .existing-pins{
   height: 30px;
   width: 30px;
-  color: rgb(227, 43, 43);
+  color: #d62828;
 }
-.custom-popup .mapboxgl-popup-close-button{
-    background-color: black;
-    border-radius: 4px;
-}
+
 .new-pins{
     height: 30px;
     width: 30px;
-    color:rgb(43, 132, 227);
-}
+    color:#2a9d8f;
+    animation: bounce 1s infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }

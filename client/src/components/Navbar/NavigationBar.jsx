@@ -2,17 +2,17 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { FaMapMarkedAlt } from "react-icons/fa";
+import useAuth from "../../hooks/useAuth";
 
 const NavigationBar = () => {
   const navigate = useNavigate();
-
-  // Auth check
-  const isAuthenticated = !!localStorage.getItem("accessToken");
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    navigate("/login");
+    setIsAuthenticated(false);
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -38,15 +38,15 @@ const NavigationBar = () => {
               </Button>
             ) : (
               <>
-              <Link to="/login" className="nav-link">
-              <Button variant="outline-dark" className="me-2">
-                Login
-              </Button>
-            </Link>
-            <Link to="/signup" className="nav-link">
-              <Button variant="dark">Sign Up</Button>
-            </Link>
-            </>
+                <Link to="/login" className="nav-link">
+                  <Button variant="outline-dark" className="me-2">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup" className="nav-link">
+                  <Button variant="dark">Sign Up</Button>
+                </Link>
+              </>
             )}
           </Nav>
         </Navbar.Collapse>
