@@ -9,7 +9,6 @@ export const createTravelLog = async (req, res) => {
       description,
       visitedDate,
       location,
-      images = [],
       rating
     } = req.body;
 
@@ -34,18 +33,30 @@ export const createTravelLog = async (req, res) => {
     }
 
     // Upload images to Cloudinary
-    const uploadedImages = await Promise.all(
-      images.map(async (image) => {
-        const result = await cloudinary.uploader.upload(image, {
-          folder: "travel-logs"
-        });
+    let uploadedImages = [];
 
-        return {
-          url: result.secure_url,
-          publicId: result.public_id
-        };
-      })
-    );
+    if(req.files && req.files.length > 0) {
+      const uploadToCloudinary = (file) => {
+        return new Promise((resolve, reject) => {
+         const uploadStream = cloudinary.uploader.upload_stream(
+          {resource_type: "image", folder: "travel-logs"},
+          (error, result) => {
+            if(error) return reject(error);
+            resolve({
+              url: result.secure_url,
+              publicId: result.public_id
+            });
+          }
+        );
+        uploadStream.end(file.buffer);
+        });
+      };
+
+      uploadedImages = await Promise.all(
+        req.files.map(uploadToCloudinary)
+      );
+    }
+
 
     // Create new travel log
     const travelLog = new TravelLog({
