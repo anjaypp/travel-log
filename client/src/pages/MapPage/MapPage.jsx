@@ -5,6 +5,7 @@ import { IoMdPin } from "react-icons/io";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./MapPage.css"
 import PinPopupView from "../../components/Popup/PinPopupView/PinPopupView";
+import PinForm from "../../components/Popup/PinForm/PinForm";
 
 function MapPage() {
   const [pins, setPins] = useState([]);
@@ -75,6 +76,7 @@ function MapPage() {
 
       {/* New pin on map click */}
       {addNewPins && (
+        <>
         <Marker
           longitude={addNewPins.lng}
           latitude={addNewPins.lat}
@@ -82,6 +84,25 @@ function MapPage() {
         >
           <IoMdPin className="new-pins" />
         </Marker>
+       
+       <Popup
+       className="custom-popup"
+       longitude={addNewPins.lng}
+       latitude={addNewPins.lat}
+       closeButton={true}
+       closeOnClick={false}
+       anchor="left"
+       onClose={() => setNewPins(null)}
+       >
+        <PinForm
+          location={addNewPins}
+          onSuccess={(newPin) => {
+            setPins((prev) => [...prev, newPin]);
+            setNewPins(null);
+          }}
+        />
+       </Popup>
+       </>
       )}
     </Map>
   );
