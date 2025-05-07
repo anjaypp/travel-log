@@ -33,6 +33,29 @@ function MapPage() {
     setNewPins({ lat, lng });
   };
 
+  const handleEditPin = async (updatedData, pinId) => {
+    try {
+      const res = await axiosInstance.put(`/logs/${pinId}`, updatedData);
+      setPins((prev) =>
+        prev.map((pin) => (pin._id === pinId ? res.data : pin))
+      );
+      setCurrentPopupId(null);
+    } catch (err) {
+      console.error("Error editing pin", err);
+    }
+  };
+  
+  const handleDeletePin = async (pinId) => {
+    try {
+      await axiosInstance.delete(`/logs/${pinId}`);
+      setPins((prev) => prev.filter((pin) => pin._id !== pinId));
+      setCurrentPopupId(null);
+    } catch (err) {
+      console.error("Error deleting pin", err);
+    }
+  };
+  
+
   return (
     <Map
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
@@ -68,7 +91,14 @@ function MapPage() {
             onClose={() => setCurrentPopupId(null)}
 
           >
-            <PinPopupView pin={pin} />
+            <PinPopupView pin={pin}
+              onEdit={(updatedData) => 
+              handleEditPin(updatedData, pin._id)
+            }
+            onDelete={() =>
+              handleDeletePin(pin._id)
+            }
+              />
           </Popup>
              )}
         </React.Fragment>

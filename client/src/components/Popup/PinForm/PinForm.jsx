@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axiosInstance from "../../../api/axios";
+import styles from "./PinForm.module.css";
 
-function PinForm({ location, onSuccess, onCancel }) {
+function PinForm({ location, onSuccess }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -56,6 +57,7 @@ function PinForm({ location, onSuccess, onCancel }) {
         name="title"
         placeholder="Title"
         value={formData.title}
+        className={styles.input}
         onChange={handleChange}
         required
       />
@@ -63,6 +65,7 @@ function PinForm({ location, onSuccess, onCancel }) {
         name="description"
         placeholder="Description"
         value={formData.description}
+        className={styles.input}
         onChange={handleChange}
         required
       />
@@ -70,6 +73,7 @@ function PinForm({ location, onSuccess, onCancel }) {
         type="date"
         name="visitedDate"
         value={formData.visitedDate}
+        className={styles.input}
         onChange={handleChange}
         required
       />
@@ -78,6 +82,7 @@ function PinForm({ location, onSuccess, onCancel }) {
         name="rating"
         placeholder="Rating (1-5)"
         value={formData.rating}
+        className={styles.input}
         onChange={handleChange}
         min={1}
         max={5}
@@ -87,13 +92,11 @@ function PinForm({ location, onSuccess, onCancel }) {
         multiple
         accept="image/*"
         onChange={handleImageChange}
+        className={styles.input}
       />
-      <div className="form-buttons">
+      <div className={styles.buttonGroup}>
         <button type="submit" disabled={loading}>
           {loading ? "Adding..." : "Add"}
-        </button>
-        <button type="button" onClick={onCancel}>
-          Cancel
         </button>
       </div>
     </form>
