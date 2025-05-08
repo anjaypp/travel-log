@@ -4,24 +4,16 @@ import User from "../models/User.model.js";
 
 export const createTravelLog = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      visitedDate,
-      location,
-      rating
-    } = req.body;
+    const { title, description, visitedDate, location, rating } = req.body;
 
     const userId = req.user._id;
 
     // Input validation
     if (!title || !description || !visitedDate || !location) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "The fields title, description, visited date and location are required"
-        });
+      return res.status(400).json({
+        message:
+          "The fields title, description, visited date and location are required"
+      });
     }
 
     // Validate location coordinates
@@ -32,53 +24,33 @@ export const createTravelLog = async (req, res) => {
       return res.status(400).json({ message: "Invalid longitude" });
     }
 
-    // Upload images to Cloudinary
-    let uploadedImages = [];
+    // Get uploaded images from busboy middleware
+    const uploadedImages = req.uploadedImages || [];
 
-    if(req.files && req.files.length > 0) {
-      const uploadToCloudinary = (file) => {
-        return new Promise((resolve, reject) => {
-         const uploadStream = cloudinary.uploader.upload_stream(
-          {resource_type: "image", folder: "travel-logs"},
-          (error, result) => {
-            if(error) return reject(error);
-            resolve({
-              url: result.secure_url,
-              publicId: result.public_id
-            });
-          }
-        );
-        uploadStream.end(file.buffer);
-        });
-      };
-
-      uploadedImages = await Promise.all(
-        req.files.map(uploadToCloudinary)
-      );
-    }
-
-
-    // Create new travel log
-    const travelLog = new TravelLog({
+    const travelLogData = {
       user: userId,
       title,
       description,
-      visitedDate,
-      location,
+      visitedDate: new Date(visitedDate),
+      location: {
+        lat: parseFloat(location.lat),
+        lng: parseFloat(location.lng)
+      },
       images: uploadedImages,
-      rating
-    });
+      rating: rating ? parseInt(rating, 5) : 0
+    };
 
-    await travelLog.save();
+    const travelLog = new TravelLog(travelLogData);
+    const savedTravelLog = await travelLog.save();
 
     // Automatically add log ID to user
     await User.findByIdAndUpdate(userId, {
-      $push: { travelLogs: travelLog._id }
+      $push: { travelLogs: savedTravelLog._id }
     });
 
-    res.status(201).json(travelLog);
+    res.status(201).json(savedTravelLog);
   } catch (error) {
-    console.error(error);
+    console.error("Error creating travel log:", error);
     res.status(500).json({ message: "Error creating travel log" });
   }
 };
@@ -142,7 +114,7 @@ export const updateTravelLog = async (req, res) => {
       {
         new: true,
         runValidators: true
-      },
+      }
     );
 
     res.json(updatedLog);
