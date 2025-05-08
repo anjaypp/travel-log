@@ -11,7 +11,7 @@ const PinPopupView = ({ pin, onEdit, onDelete }) => {
   const [showImage, setShowImage] = useState(false);
 
   const handleEditSubmit = (updatedData) => {
-    onEdit(updatedData, pin._id); // Send updated data and pin ID
+    onEdit(updatedData, pin._id);
     setShowEditForm(false);
   };
 
@@ -45,7 +45,7 @@ const PinPopupView = ({ pin, onEdit, onDelete }) => {
               className={styles.showImages}
               onClick={() => setShowImage(!showImage)}
             />
-            <OffCanvasImage show={showImage} onHide={() => setShowImage(false)} url={pin.images} />
+            <OffCanvasImage show={showImage} onHide={() => setShowImage(false)} images={pin.images || []} />
           </div>
         </>
       )}
