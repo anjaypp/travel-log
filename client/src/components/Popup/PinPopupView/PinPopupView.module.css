@@ -1,0 +1,37 @@
+.pinPopupContainer{
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 1.5rem;
+}
+.pinPopup{
+    padding: 1rem;
+}
+.popupTitle{
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #222;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+.buttonGroup{
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem 0 1rem;
+  border-top: 1px solid #eee;
+}
+.editButton{
+  height: 25px;
+  width: 25px;
+  color: #115dfc;
+  cursor: pointer;
+}
+.deleteButton{
+  height: 25px;
+  width: 25px;
+  color: #ff0000;
+}
+.showImages{
+  height: 25px;
+  width: 25px;
+}
