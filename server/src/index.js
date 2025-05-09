@@ -2,10 +2,13 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
+import mongoSanitize from 'express-mongo-sanitize';
+import { xss } from 'express-xss-sanitizer';
 
 
 import notFound from './middlewares/notFound.js';
 import errorHandler from './middlewares/errorHandler.js';
+import { globalLimiter } from './middlewares/rateLimit.js';
 import config from './lib/config/config.js';
 import { connectDB } from './lib/config/db.js';
 import passport from './lib/config/passport/index.js';
@@ -16,23 +19,41 @@ import logsRoutes from './routes/logs.route.js';
 // Initialization
 const app = express();
 
-// Core middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Security 
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", 'code.jquery.com'],
+    imgSrc: ["'self'", 'res.cloudinary.com'],
+    connectSrc: ["'self'", config.CLIENT_URL || 'http://localhost:5173'],
+  },
+}));
 
-// Security and logging
-app.use(morgan('common'));
-app.use(helmet());
+// Logging
+app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'common'));
+
 
 // CORS 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: config.CLIENT_URL || 'http://localhost:5173',
   credentials: true, 
 }));
+
+// Core middlewares
+app.use(express.json({ limit: '50kb' }));
+app.use(express.urlencoded({ extended: true, limit: '50kb' }));
+
+
+// Sanitize
+app.use(mongoSanitize({ replaceWith: '_', allowDots: true}));
+app.use(xss());
 
 
 // Passport
 app.use(passport.initialize());
+
+//Global rate limiter
+app.use('/api/', globalLimiter);
 
 //Routes
 app.use('/api/v1/auth', authRoutes);
@@ -43,7 +64,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 
-const port = config.PORT;
+const port = config.PORT || 4000;
 
 connectDB().then(() => {
   app.listen(port, () => {
