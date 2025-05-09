@@ -108,18 +108,63 @@ export const updateTravelLog = async (req, res) => {
         .json({ message: "Not authorized to update this travel log" });
     }
 
+    // Extract fields from req.body (FormData)
+    const { title, description, visitedDate, rating, location } = req.body;
+
+    // Prepare update data with defaults from existing travelLog
+    const updateData = {
+      title: title || travelLog.title,
+      description: description || travelLog.description,
+      visitedDate: visitedDate ? new Date(visitedDate) : travelLog.visitedDate,
+      rating: rating ? parseInt(rating, 10) : travelLog.rating,
+      location: travelLog.location, // Default to existing location
+    };
+
+    // Parse and validate location if provided
+    if (location) {
+      let parsedLocation;
+      try {
+        parsedLocation = typeof location === 'string' ? JSON.parse(location) : location;
+      } catch (error) {
+        return res.status(400).json({ message: "Invalid location format", error });
+      }
+
+      // Validate location coordinates
+      if (parsedLocation.lat < -90 || parsedLocation.lat > 90) {
+        return res.status(400).json({ message: "Invalid latitude" });
+      }
+      if (parsedLocation.lng < -180 || parsedLocation.lng > 180) {
+        return res.status(400).json({ message: "Invalid longitude" });
+      }
+
+      updateData.location = {
+        lat: parseFloat(parsedLocation.lat),
+        lng: parseFloat(parsedLocation.lng),
+      };
+    }
+
+    // Validate visitedDate if provided
+    if (visitedDate && new Date(visitedDate) > new Date()) {
+      return res.status(400).json({ message: "Visited date cannot be in the future" });
+    }
+
+    // Get uploaded images from busboy middleware
+    const uploadedImages = req.uploadedImages || [];
+    updateData.images = uploadedImages.length > 0 ? uploadedImages : travelLog.images;
+
+    // Update the travel log
     const updatedLog = await TravelLog.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       {
         new: true,
-        runValidators: true
+        runValidators: true,
       }
     );
 
     res.json(updatedLog);
   } catch (error) {
-    console.error(error);
+    console.error("Error updating travel log:", error);
     res.status(500).json({ message: "Error updating travel log" });
   }
 };
@@ -142,11 +187,13 @@ export const deleteTravelLog = async (req, res) => {
     await travelLog.deleteOne();
 
     // Delete images from Cloudinary
+    if(travelLog.images.length > 0){
     await Promise.all(
       travelLog.images.map(async (image) => {
         await cloudinary.uploader.destroy(image.publicId);
       })
     );
+  }
 
     // Optionally: Remove the log reference from the User model
     await User.findByIdAndUpdate(req.user._id, {
