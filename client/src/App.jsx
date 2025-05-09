@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { Toaster} from 'react-hot-toast';
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
 import MapPage from "./pages/MapPage/MapPage";
@@ -10,6 +11,8 @@ import ProtectedLayout from "./components/ProtectedLayout/ProtectedLayout";
 function App() {
   return (
     <>
+      <Toaster
+        position="bottom-right" />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

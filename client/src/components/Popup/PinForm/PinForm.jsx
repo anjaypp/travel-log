@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 import axiosInstance from "../../../api/axios";
 import styles from "./PinForm.module.css";
 
@@ -10,7 +11,10 @@ function PinForm({ location, onSuccess }) {
     rating: 0
   });
   const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,7 +27,24 @@ function PinForm({ location, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+    if (!formData.visitedDate) {
+      toast.error('Visited date is required');
+      return;
+    }
+    if (formData.rating && (formData.rating < 1 || formData.rating > 5)) {
+      toast.error('Rating must be between 1 and 5');
+      return;
+    }
+    if (new Date(formData.visitedDate) > new Date()) {
+      toast.error('Visited date cannot be in the future');
+      return;
+    }
+    setIsLoading(true);
+    const toastId = toast.loading('Creating log...');
 
     try {
       const data = new FormData();
@@ -40,18 +61,27 @@ function PinForm({ location, onSuccess }) {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
-      onSuccess(res.data);
+      if (res.status >= 200 && res.status < 300) {
+        toast.dismiss(toastId);
+        toast.success("Log added successfully");
+        onSuccess(res.data);
+      }
+      else{
+        throw new Error("Failed to add log");
+      }
     } catch (err) {
-      console.error("Upload failed", err);
-      alert("Error uploading log");
+      toast.dismiss(toastId);
+      const message = err.response?.data?.message || "Failed to add log";
+      toast.error(message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <form className="popup-form" onSubmit={handleSubmit}>
-      <h3>Add Travel Log</h3>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <h4>Add Travel Log</h4>
+      <label htmlFor="title" className={styles.label}>Title</label>
       <input
         type="text"
         name="title"
@@ -59,24 +89,34 @@ function PinForm({ location, onSuccess }) {
         value={formData.title}
         className={styles.input}
         onChange={handleChange}
+        disabled={isLoading}
         required
       />
+
+      <label htmlFor="description" className={styles.label}>Description</label>
       <textarea
         name="description"
         placeholder="Description"
         value={formData.description}
         className={styles.input}
         onChange={handleChange}
+        disabled={isLoading}
         required
       />
+
+      <label htmlFor="visitedDate" className={styles.label}>Visited Date</label>
       <input
         type="date"
         name="visitedDate"
         value={formData.visitedDate}
         className={styles.input}
+        max={today}
         onChange={handleChange}
+        disabled={isLoading}
         required
       />
+
+      <label htmlFor="rating" className={styles.label}>Rating</label>
       <input
         type="number"
         name="rating"
@@ -84,19 +124,24 @@ function PinForm({ location, onSuccess }) {
         value={formData.rating}
         className={styles.input}
         onChange={handleChange}
-        min={1}
+        disabled={isLoading}
+        min={0}
         max={5}
       />
+
+      <label className={styles.label}>Images</label>
       <input
         type="file"
         multiple
         accept="image/*"
         onChange={handleImageChange}
         className={styles.input}
+        disabled={isLoading}
       />
+
       <div className={styles.buttonGroup}>
-        <button type="submit" disabled={loading}>
-          {loading ? "Adding..." : "Add"}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Adding..." : "Add"}
         </button>
       </div>
     </form>

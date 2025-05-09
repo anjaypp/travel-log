@@ -6,23 +6,22 @@ import EditPinForm from '../EditPinForm/EditPinForm';
 import OffCanvasImage from '../../OffCanvasImage/OffCanvasImage';
 import styles from "./PinPopupView.module.css";
 
-const PinPopupView = ({ pin, onEdit, onDelete }) => {
+const PinPopupView = ({ pin, onEditSubmit, onDelete }) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [showImage, setShowImage] = useState(false);
 
-  const handleEditSubmit = (updatedData) => {
-    onEdit(updatedData, pin._id);
-    setShowEditForm(false);
-  };
 
   return (
     <div className={styles.pinPopupContainer}>
       {showEditForm ? (
         <EditPinForm
-          initialData={pin}
-          onSubmit={handleEditSubmit}
-          onClose={() => setShowEditForm(false)}
-        />
+        initialData={pin}
+        onSubmit={(formData) => {
+          onEditSubmit(formData, pin._id);
+          setShowEditForm(false);
+        }}
+        onClose={() => setShowEditForm(false)}
+      />
       ) : (
         <>
           <div className={styles.pinPopup}>

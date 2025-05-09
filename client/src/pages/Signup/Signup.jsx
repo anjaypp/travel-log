@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
 import axiosInstance from "../../api/axios";
 import styles from "./Signup.module.css";
 
@@ -9,10 +10,23 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    if (password.length < 7) {
+      toast.error("Password must be at least 7 characters");
+      return;
+    }
+
+    setIsLoading(true);
+    const toastId = toast.loading("Signing up...");
 
     try {
       const res = await axiosInstance.post("/auth/signup", {
@@ -21,12 +35,20 @@ const Signup = () => {
         password
       });
 
-      if (res.status === 200) {
-        window.location.href = "/login";
+      if (res.status >= 200 && res.status < 300) {
+        toast.dismiss(toastId);
+        toast.success(res.data.message);
+        setIsLoading(false);
+        navigate("/login", { replace: true });
+      } else {
+        throw new Error("Signup failed");
       }
     } catch (err) {
-      console.error("Error signing up", err);
-      alert("Signup failed. Try again.");
+      toast.dismiss(toastId);
+      const message = err.response?.data?.message || 'Failed to sign up';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,6 +75,7 @@ const Signup = () => {
               placeholder="Your Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
               required
             />
           </div>
@@ -69,6 +92,7 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -84,6 +108,7 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
             <div className={styles.showPasswordCheckbox}>
               <input
@@ -101,16 +126,13 @@ const Signup = () => {
             </div>
           </div>
 
-          <button type="submit" className={styles.signupButton}>
-            Signup
-          </button>
+          <button className={styles.signupButton} type="submit" disabled={isLoading}>
+          {isLoading ? 'Signing up...' : 'Sign Up'}
+        </button>
 
           <p className={styles.signupText}>
-            Already have an account?{" "}
-            <a href="/login" className={styles.signupLink}>
-              Login
-            </a>
-          </p>
+          Already have an account? <Link className={styles.signupLink} to="/login">Login</Link>
+        </p>
         </form>
       </div>
     </div>

@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import { FaMapMarkedAlt } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 
 const NavigationBar = () => {
@@ -12,6 +13,7 @@ const NavigationBar = () => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     setIsAuthenticated(false);
+    toast.success("Logged out successfully");
     navigate("/login", { replace: true });
   };
 
