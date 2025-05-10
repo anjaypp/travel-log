@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../../../api/axios";
-import styles from "./PinForm.module.css";
+import styles from "./Pinform.module.css";
 
 function PinForm({ location, onSuccess }) {
   const [formData, setFormData] = useState({
