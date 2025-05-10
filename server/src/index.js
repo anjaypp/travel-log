@@ -45,7 +45,32 @@ app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 
 
 // Sanitize
-app.use(mongoSanitize({ replaceWith: '_', allowDots: true}));
+// Middleware to make sanitized inputs available in route handlers
+const applySanitizedInputs = (req, res, next) => {
+  const originalQuery = req.query;
+  const originalBody = req.body;
+  const originalParams = req.params;
+  
+  // Create sanitized versions
+  const sanitizedQuery = mongoSanitize.sanitize(req.query);
+  const sanitizedBody = mongoSanitize.sanitize(req.body);
+  const sanitizedParams = mongoSanitize.sanitize(req.params);
+  
+  // Keep original versions accessible
+  req.originalQuery = originalQuery;
+  req.originalBody = originalBody;
+  req.originalParams = originalParams;
+  
+  // Make sanitized versions available
+  req.sanitizedQuery = sanitizedQuery;
+  req.sanitizedBody = sanitizedBody;
+  req.sanitizedParams = sanitizedParams;
+  
+  // Optional: Log sanitization events if values were changed
+  next();
+};
+
+app.use(applySanitizedInputs);
 app.use(xss());
 
 
