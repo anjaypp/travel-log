@@ -111,6 +111,14 @@ export const updateTravelLog = async (req, res) => {
     // Extract fields from req.body (FormData)
     const { title, description, visitedDate, rating, location } = req.body;
 
+    // Validate inputs
+    if (title && typeof title !== 'string') {
+      return res.status(400).json({ message: "Title must be a string" });
+    }
+    if (description && typeof description !== 'string') {
+      return res.status(400).json({ message: "Description must be a string" });
+    }
+
     // Prepare update data with defaults from existing travelLog
     const updateData = {
       title: title || travelLog.title,
@@ -148,9 +156,8 @@ export const updateTravelLog = async (req, res) => {
       return res.status(400).json({ message: "Visited date cannot be in the future" });
     }
 
-    // Get uploaded images from busboy middleware
-    const uploadedImages = req.uploadedImages || [];
-    updateData.images = uploadedImages.length > 0 ? uploadedImages : travelLog.images;
+    updateData.images = [...travelLog.images, ...(req.uploadedImages || [])];
+    console.log('Updated images:', updateData.images);
 
     // Update the travel log
     const updatedLog = await TravelLog.findByIdAndUpdate(
